@@ -9,7 +9,10 @@ import { createHttpLink } from 'apollo-link-http'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 
 const httpLink = createHttpLink({
-  uri: 'https://api.github.com/graphql'
+  uri: 'https://api.github.com/graphql',
+  headers: {
+    authorization: `Bearer ${process.env.REACT_APP_GITHUB_ACCESS_TOKEN}`,
+  },
 })
 
 const client = new ApolloClient({
