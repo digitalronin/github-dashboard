@@ -1,0 +1,2 @@
+server:
+	. .env; yarn start
