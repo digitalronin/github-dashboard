@@ -31,11 +31,15 @@ query ($owner: String!, $name:String!, $startDate: DateTime!, $after: String) {
 
 class Repository extends Component {
   state = {
+    fetching: true,
     issues: []
   }
 
-  renderIssues() {
-    console.log(this.state.issues);
+  renderData() {
+    if (this.state.fetching) {
+      return <div>fetching data...</div>;
+    }
+
     return (
       <ul>
         {this.state.issues.map(issue => <li key={issue.id}>{issue.title}</li>)}
@@ -69,7 +73,7 @@ class Repository extends Component {
       after = pageInfo.endCursor;
       moreToFetch = !pageInfo.hasNextPage;
     }
-    this.setState({ issues });
+    this.setState({ fetching: false, issues });
   }
 
   componentDidMount() {
@@ -83,7 +87,7 @@ class Repository extends Component {
         <h2>
           Issues: {this.state.issues.count}
         </h2>
-        {this.renderIssues()}
+        {this.renderData()}
       </div>
     );
   }
