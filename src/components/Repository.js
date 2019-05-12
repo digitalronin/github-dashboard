@@ -49,6 +49,25 @@ class Repository extends Component {
     });
   }
 
+  pointsClosedDuringSprint() {
+    return this.issuesClosedDuringSprint().reduce((sum, issue) => {
+      console.log('pointsFromLabelNames', this.pointsFromLabelNames(this.labelNames(issue)));
+      return sum + this.pointsFromLabelNames(this.labelNames(issue));
+    }, 0);
+  }
+
+  labelNames(issue) {
+    return issue.labels.nodes.map(label => label.name);
+  }
+
+  pointsFromLabelNames(names) {
+    for(let i = 0; i < names.length; i++) {
+      const match = names[i].match(/estimate-(\d+)/);
+      if (match) { return parseInt(match[1]) };
+    }
+    return 0;
+  }
+
   async fetchIssues() {
     const graphQLClient = new GraphQLClient(ENDPOINT, {
       headers: {
@@ -100,6 +119,7 @@ class Repository extends Component {
       <div className="sprintStats">
         <div>Issues opened in sprint: {this.issuesOpenedDuringSprint().length}</div>
         <div>Issues closed in sprint: {this.issuesClosedDuringSprint().length}</div>
+        <div>Points delivered in sprint: {this.pointsClosedDuringSprint()}</div>
       </div>
     );
   }
