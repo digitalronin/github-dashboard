@@ -41,6 +41,14 @@ const VARIABLES = {
 };
 
 class Repository extends Component {
+  renderIssues(issues) {
+    return (
+      <ul>
+        {issues.map(issue => <li key={issue.id}>{issue.title}</li>)}
+      </ul>
+    );
+  }
+
   render() {
     return (
       <Query query={REPO_QUERY} variables={VARIABLES}>
@@ -59,9 +67,7 @@ class Repository extends Component {
               <h2>
                 Issues: {repository.issues.totalCount}
               </h2>
-              <ul>
-                {issues.map(issue => <li key={issue.id}>{issue.title}</li>)}
-              </ul>
+              {this.renderIssues(issues)}
             </div>
           );
         }}
