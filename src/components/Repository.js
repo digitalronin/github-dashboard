@@ -36,23 +36,17 @@ class Repository extends Component {
   }
 
   issuesOpenedDuringSprint() {
-    return this.state.issues.reduce((sum, issue) => {
+    return this.state.issues.filter(issue => {
       const createdAt = Date.parse(issue.createdAt);
-      if (createdAt > this.state.sprintStart && createdAt < this.state.sprintEnd) {
-        return sum + 1;
-      }
-      return sum;
-    }, 0);
+      return (createdAt > this.state.sprintStart && createdAt < this.state.sprintEnd);
+    });
   }
 
   issuesClosedDuringSprint() {
-    return this.state.issues.reduce((sum, issue) => {
+    return this.state.issues.filter(issue => {
       const closedAt = Date.parse(issue.closedAt);
-      if (closedAt > this.state.sprintStart && closedAt < this.state.sprintEnd) {
-        return sum + 1;
-      }
-      return sum;
-    }, 0);
+      return (closedAt > this.state.sprintStart && closedAt < this.state.sprintEnd);
+    });
   }
 
   async fetchIssues() {
@@ -104,11 +98,12 @@ class Repository extends Component {
 
     return (
       <div className="sprintStats">
-        <div>Issues opened in sprint: {this.issuesOpenedDuringSprint()}</div>
-        <div>Issues closed in sprint: {this.issuesClosedDuringSprint()}</div>
+        <div>Issues opened in sprint: {this.issuesOpenedDuringSprint().length}</div>
+        <div>Issues closed in sprint: {this.issuesClosedDuringSprint().length}</div>
       </div>
     );
   }
+
 
 }
 
