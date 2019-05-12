@@ -14,8 +14,6 @@ query ($owner: String!, $name:String!, $startDate: DateTime!, $after: String) {
       totalCount
       nodes {
         id
-        state
-        title
         createdAt
         closedAt
         labels(first: 100) {
