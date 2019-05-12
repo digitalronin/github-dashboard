@@ -35,19 +35,6 @@ class Repository extends Component {
     issues: []
   }
 
-  renderData() {
-    if (this.state.fetching) {
-      return <div>fetching data...</div>;
-    }
-
-    return (
-      <div className="sprintStats">
-        <div>Issues opened in sprint: {this.issuesOpenedDuringSprint()}</div>
-        <div>Issues closed in sprint: {this.issuesClosedDuringSprint()}</div>
-      </div>
-    );
-  }
-
   issuesOpenedDuringSprint() {
     return this.state.issues.reduce((sum, issue) => {
       const createdAt = Date.parse(issue.createdAt);
@@ -109,6 +96,20 @@ class Repository extends Component {
       </div>
     );
   }
+
+  renderData() {
+    if (this.state.fetching) {
+      return <div>fetching data...</div>;
+    }
+
+    return (
+      <div className="sprintStats">
+        <div>Issues opened in sprint: {this.issuesOpenedDuringSprint()}</div>
+        <div>Issues closed in sprint: {this.issuesClosedDuringSprint()}</div>
+      </div>
+    );
+  }
+
 }
 
 export default Repository;
