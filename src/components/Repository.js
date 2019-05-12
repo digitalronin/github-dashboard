@@ -29,19 +29,6 @@ query ($owner: String!, $name:String!, $startDate: DateTime!, $after: String) {
 }
 `;
 
-const owner = "ministryofjustice"; // repository owner
-const name = "cloud-platform";  // repository name
-const startDate = "2019-05-01T00:00:00Z";  // **Updated At** timestamp of the issue - could have been created earlier
-// const after = "Y3Vyc29yOnYyOpK5MjAxOS0wNS0wOFQxNTo1NDowMCswMTowMM4aVP_g";  // GraphQL endCursor for paginated results
-const after = null;  // GraphQL endCursor for paginated results
-
-const VARIABLES = {
-  owner,
-  name,
-  startDate,
-  after
-};
-
 class Repository extends Component {
   state = {
     issues: []
@@ -68,7 +55,14 @@ class Repository extends Component {
         issues = [];
 
     while (moreToFetch) {
-      const data = await graphQLClient.request(REPO_QUERY, { ...VARIABLES, after });
+      const variables = {
+        owner: this.props.repoOwner,
+        name: this.props.repoName,
+        startDate: this.props.startDate,
+        after
+      };
+
+      const data = await graphQLClient.request(REPO_QUERY, variables);
       const issuesInBatch = data.repository.issues;
       const pageInfo = issuesInBatch.pageInfo;
       issues = issues.concat(issuesInBatch.nodes);
@@ -85,7 +79,7 @@ class Repository extends Component {
   render() {
     return (
       <div className='repository'>
-        <h1>{owner}/{name}</h1>
+        <h1>{this.props.repoOwner}/{this.props.repoName}</h1>
         <h2>
           Issues: {this.state.issues.count}
         </h2>
