@@ -57,36 +57,25 @@ class Repository extends Component {
   }
 
   async fetchIssues() {
-    console.log('fetchIssues');
-
     const graphQLClient = new GraphQLClient(ENDPOINT, {
       headers: {
         authorization: `Bearer ${process.env.REACT_APP_GITHUB_ACCESS_TOKEN}`,
       },
     })
 
-    let keepFetching = true;
-    let after = null;
-    let vars;
-    let data;
-    let pageInfo;
-    let issues = [];
+    let moreToFetch = true,
+        after = null,
+        issues = [];
 
-    while (keepFetching) {
-      vars = { ...VARIABLES, after };
-      console.log('fetching...');
-      data = await graphQLClient.request(REPO_QUERY, vars);
+    while (moreToFetch) {
+      const data = await graphQLClient.request(REPO_QUERY, { ...VARIABLES, after });
       const issuesInBatch = data.repository.issues;
-      pageInfo = issuesInBatch.pageInfo;
+      const pageInfo = issuesInBatch.pageInfo;
       issues = issues.concat(issuesInBatch.nodes);
-      if (pageInfo.hasNextPage) {
-        after = pageInfo.endCursor;
-      } else {
-        keepFetching = false;
-      }
+      after = pageInfo.endCursor;
+      moreToFetch = !pageInfo.hasNextPage;
     }
     this.setState({ issues });
-    console.log(data);
   }
 
   componentDidMount() {
