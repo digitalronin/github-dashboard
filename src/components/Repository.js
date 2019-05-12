@@ -31,6 +31,8 @@ query ($owner: String!, $name:String!, $startDate: DateTime!, $after: String) {
 
 class Repository extends Component {
   state = {
+    sprintStart: Date.parse(this.props.startDate),
+    sprintEnd: Date.parse(this.props.endDate),
     fetching: true,
     issues: []
   }
@@ -41,10 +43,31 @@ class Repository extends Component {
     }
 
     return (
-      <ul>
-        {this.state.issues.map(issue => <li key={issue.id}>{issue.title}</li>)}
-      </ul>
+      <div className="sprintStats">
+        <div>Issues opened in sprint: {this.issuesOpenedDuringSprint()}</div>
+        <div>Issues closed in sprint: {this.issuesClosedDuringSprint()}</div>
+      </div>
     );
+  }
+
+  issuesOpenedDuringSprint() {
+    return this.state.issues.reduce((sum, issue) => {
+      const createdAt = Date.parse(issue.createdAt);
+      if (createdAt > this.state.sprintStart && createdAt < this.state.sprintEnd) {
+        return sum + 1;
+      }
+      return sum;
+    }, 0);
+  }
+
+  issuesClosedDuringSprint() {
+    return this.state.issues.reduce((sum, issue) => {
+      const closedAt = Date.parse(issue.closedAt);
+      if (closedAt > this.state.sprintStart && closedAt < this.state.sprintEnd) {
+        return sum + 1;
+      }
+      return sum;
+    }, 0);
   }
 
   async fetchIssues() {
@@ -84,9 +107,6 @@ class Repository extends Component {
     return (
       <div className='repository'>
         <h1>{this.props.repoOwner}/{this.props.repoName}</h1>
-        <h2>
-          Issues: {this.state.issues.count}
-        </h2>
         {this.renderData()}
       </div>
     );
