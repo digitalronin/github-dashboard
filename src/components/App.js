@@ -6,7 +6,8 @@ class App extends Component {
     return <Repository
       repoOwner="ministryofjustice"
       repoName="cloud-platform"
-      startDate="2019-05-01T00:00:00Z" // **Updated At** timestamp of the issue - could have been created earlier
+      startDate="2019-04-29T00:00:00Z" // **Updated At** timestamp of the issue - could have been created earlier
+      endDate="2019-05-14T00:00:00Z" // **Updated At** timestamp of the issue - could have been created earlier
     />;
   }
 }
