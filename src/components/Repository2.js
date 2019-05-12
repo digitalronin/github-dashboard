@@ -89,22 +89,6 @@ class Repository2 extends Component {
     console.log(data);
   }
 
-  // fetchIssues() {
-  //   return (
-  //     <Query query={REPO_QUERY} variables={VARIABLES}>
-  //       {({ loading, error, data }) => {
-  //         if (loading) return "";
-  //         if (error) return "";
-  //         console.log('fetchIssues', data);
-  //         const issues = repository.issues.nodes;
-  //         const { repository } = data;
-  //         this.setState({ issues: [...this.state.issues, ...issues] });
-  //         return "";
-  //       }}
-  //     </Query>
-  //   );
-  // }
-
   componentDidMount() {
     this.fetchIssues();
   }
