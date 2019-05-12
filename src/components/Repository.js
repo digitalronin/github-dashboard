@@ -42,7 +42,7 @@ const VARIABLES = {
   after
 };
 
-class Repository2 extends Component {
+class Repository extends Component {
   state = {
     issues: []
   }
@@ -106,4 +106,4 @@ class Repository2 extends Component {
   }
 }
 
-export default Repository2;
+export default Repository;
