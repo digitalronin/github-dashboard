@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import Repository from './Repository';
+import Repository2 from './Repository2';
 
 class App extends Component {
   render() {
-    return <Repository />;
+    return <Repository2 />;
   }
 }
 
