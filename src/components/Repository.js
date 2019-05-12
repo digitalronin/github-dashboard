@@ -12,6 +12,7 @@ query ($owner: String!, $name:String!, $startDate: DateTime!, $after: String) {
       }
       totalCount
       nodes {
+        id
         state
         title
         createdAt
@@ -48,6 +49,7 @@ class Repository extends Component {
           if (error) return <div>Error</div>;
           console.log(data);
           const { repository } = data;
+          const issues = repository.issues.nodes;
           return (
             <div className='repository'>
               <h1>
@@ -57,6 +59,9 @@ class Repository extends Component {
               <h2>
                 Issues: {repository.issues.totalCount}
               </h2>
+              <ul>
+                {issues.map(issue => <li key={issue.id}>{issue.title}</li>)}
+              </ul>
             </div>
           );
         }}
