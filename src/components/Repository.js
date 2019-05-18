@@ -102,9 +102,13 @@ class Repository extends Component {
   }
 
   render() {
+    const startDate = (new Date(this.state.sprintStart)).toDateString()
+    const endDate = (new Date(this.state.sprintEnd)).toDateString()
+
     return (
       <div className='repository'>
         <h1>{this.props.repoOwner}/{this.props.repoName}</h1>
+        <h2>{startDate} - {endDate}</h2>
         {this.renderData()}
       </div>
     );
