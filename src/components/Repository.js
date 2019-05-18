@@ -1,31 +1,5 @@
 import React, { Component } from 'react';
-import { GraphQLClient } from 'graphql-request'
-
-const ENDPOINT = 'https://api.github.com/graphql';
-
-const REPO_QUERY = `
-query ($owner: String!, $name:String!, $startDate: DateTime!, $after: String) {
-  repository(name: $name, owner: $owner) {
-    issues(filterBy: {since: $startDate}, orderBy: {field: CREATED_AT, direction: ASC}, first: 50, after: $after) {
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-      totalCount
-      nodes {
-        id
-        createdAt
-        closedAt
-        labels(first: 100) {
-          nodes {
-            name
-          }
-        }
-      }
-    }
-  }
-}
-`;
+import GitHub from '../lib/GitHub';
 
 class Repository extends Component {
   state = {
@@ -69,31 +43,20 @@ class Repository extends Component {
   }
 
   async fetchIssues() {
-    const graphQLClient = new GraphQLClient(ENDPOINT, {
-      headers: {
-        authorization: `Bearer ${process.env.REACT_APP_GITHUB_ACCESS_TOKEN}`,
-      },
-    })
+    const {
+      repoOwner,
+      repoName,
+      startDate
+    } = this.props;
 
-    let moreToFetch = true,
-        after = null,
-        issues = [];
+    const api = new GitHub({
+      owner: repoOwner,
+      name: repoName,
+      startDate
+    });
 
-    while (moreToFetch) {
-      const variables = {
-        owner: this.props.repoOwner,
-        name: this.props.repoName,
-        startDate: this.props.startDate,
-        after
-      };
+    const issues = await api.issuesWithinSprint();
 
-      const data = await graphQLClient.request(REPO_QUERY, variables);
-      const issuesInBatch = data.repository.issues;
-      const pageInfo = issuesInBatch.pageInfo;
-      issues = issues.concat(issuesInBatch.nodes);
-      after = pageInfo.endCursor;
-      moreToFetch = !pageInfo.hasNextPage;
-    }
     this.setState({ fetching: false, issues });
   }
 
