@@ -7,4 +7,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.repository {
+  margin: 30px;
 }
