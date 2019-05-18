@@ -6,58 +6,27 @@ class Repository extends Component {
     sprintStart: Date.parse(this.props.startDate),
     sprintEnd: Date.parse(this.props.endDate),
     fetching: true,
-    issues: []
-  }
-
-  issuesOpenedDuringSprint() {
-    return this.state.issues.filter(issue => {
-      const createdAt = Date.parse(issue.createdAt);
-      return (createdAt > this.state.sprintStart && createdAt < this.state.sprintEnd);
-    });
-  }
-
-  issuesClosedDuringSprint() {
-    return this.state.issues.filter(issue => {
-      const closedAt = Date.parse(issue.closedAt);
-      return (closedAt > this.state.sprintStart && closedAt < this.state.sprintEnd);
-    });
-  }
-
-  pointsClosedDuringSprint() {
-    return this.issuesClosedDuringSprint().reduce((sum, issue) => {
-      console.log('pointsFromLabelNames', this.pointsFromLabelNames(this.labelNames(issue)));
-      return sum + this.pointsFromLabelNames(this.labelNames(issue));
-    }, 0);
-  }
-
-  labelNames(issue) {
-    return issue.labels.nodes.map(label => label.name);
-  }
-
-  pointsFromLabelNames(names) {
-    for(let i = 0; i < names.length; i++) {
-      const match = names[i].match(/estimate-(\d+)/);
-      if (match) { return parseInt(match[1]) };
-    }
-    return 0;
+    report: {},
   }
 
   async fetchIssues() {
     const {
       repoOwner,
       repoName,
-      startDate
+      startDate,
+      endDate
     } = this.props;
 
     const api = new GitHub({
       owner: repoOwner,
       name: repoName,
-      startDate
+      startDate,
+      endDate,
     });
 
-    const issues = await api.issuesWithinSprint();
+    const { report } = await api.issuesWithinSprint();
 
-    this.setState({ fetching: false, issues });
+    this.setState({ fetching: false, report });
   }
 
   componentDidMount() {
@@ -82,16 +51,16 @@ class Repository extends Component {
       return <div>fetching data...</div>;
     }
 
+    const { report } = this.state;
+
     return (
       <div className="sprintStats">
-        <div>Issues opened in sprint: {this.issuesOpenedDuringSprint().length}</div>
-        <div>Issues closed in sprint: {this.issuesClosedDuringSprint().length}</div>
-        <div>Points delivered in sprint: {this.pointsClosedDuringSprint()}</div>
+        <div>Issues opened in sprint: {report.issuesOpenedDuringSprint}</div>
+        <div>Issues closed in sprint: {report.issuesClosedDuringSprint}</div>
+        <div>Points delivered in sprint: {report.pointsClosedDuringSprint}</div>
       </div>
     );
   }
-
-
 }
 
 export default Repository;

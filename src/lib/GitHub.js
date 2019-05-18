@@ -31,6 +31,7 @@ class GitHub {
     this.name = args.name;
     this.owner = args.owner;
     this.startDate = args.startDate;
+    this.endDate = args.endDate;
   }
 
   async issuesWithinSprint() {
@@ -59,7 +60,53 @@ class GitHub {
       moreToFetch = !pageInfo.hasNextPage;
     }
 
-    return issues;
+    return { report: this.report(issues) };
+  }
+
+  report(issues) {
+    return {
+      issuesOpenedDuringSprint: this.issuesOpenedDuringSprint(issues),
+      issuesClosedDuringSprint: this.closedDuringSprint(issues).length,
+      pointsClosedDuringSprint: this.pointsClosedDuringSprint(issues),
+    }
+  }
+
+  issuesOpenedDuringSprint(issues) {
+    const sprintStart = Date.parse(this.startDate);
+    const sprintEnd = Date.parse(this.endDate);
+
+    return issues.filter(issue => {
+      const createdAt = Date.parse(issue.createdAt);
+      return (createdAt > sprintStart && createdAt < sprintEnd);
+    }).length;
+  }
+
+  pointsClosedDuringSprint(issues) {
+    return this.closedDuringSprint(issues).reduce((sum, issue) => {
+      return sum + this.pointsFromLabelNames(this.labelNames(issue));
+    }, 0);
+  }
+
+  closedDuringSprint(issues) {
+    const sprintStart = Date.parse(this.startDate);
+    const sprintEnd = Date.parse(this.endDate);
+
+    return issues.filter(issue => {
+      const closedAt = Date.parse(issue.closedAt);
+      return (closedAt > sprintStart && closedAt < sprintEnd);
+    });
+  }
+
+  pointsFromLabelNames(names) {
+    for(let i = 0; i < names.length; i++) {
+      const match = names[i].match(/estimate-(\d+)/);
+      if (match) { return parseInt(match[1]) };
+    }
+    return 0;
+  }
+
+  labelNames(issue) {
+    return issue.labels.nodes.map(label => label.name);
   }
 }
 
